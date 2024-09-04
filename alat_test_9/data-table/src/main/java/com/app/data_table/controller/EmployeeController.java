@@ -98,7 +98,7 @@ public class EmployeeController {
     }
 
     @PostMapping("/save")
-    public ResponseEntity<ApiResponse<Employee>> processBatchOperations(
+    public ResponseEntity<ApiResponse<List<OperationRequest>>> processBatchOperations(
             @RequestBody List<OperationRequest> operations) {
         for (OperationRequest operation : operations) {
             switch (operation.getOperationType().toUpperCase()) {
@@ -121,6 +121,11 @@ public class EmployeeController {
                     throw new IllegalArgumentException("Invalid operation type: " + operation.getOperationType());
             }
         }
-        return ResponseEntity.status(HttpStatus.OK.value()).body(null);
+
+        ApiResponse<List<OperationRequest>> response = ApiResponse.<List<OperationRequest>>builder()
+                .data(operations)
+                .message("Success")
+                .build();
+        return ResponseEntity.status(HttpStatus.OK.value()).body(response);
     }
 }
