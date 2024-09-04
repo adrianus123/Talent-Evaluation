@@ -5,9 +5,9 @@ import java.math.BigInteger;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.app.data_table.model.Karyawan;
+import com.app.data_table.model.Employee;
 
 @Repository
-public interface KaryawanRepository extends JpaRepository<Karyawan, BigInteger> {
+public interface EmployeeRepository extends JpaRepository<Employee, BigInteger> {
 
 }

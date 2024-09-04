@@ -6,6 +6,6 @@ import java.util.List;
 import lombok.Data;
 
 @Data
-public class KaryawanDeleteRequest {
+public class EmployeeDeleteRequest {
     private List<BigInteger> data;
 }
