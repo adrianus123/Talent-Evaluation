@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.app.data_table.dto.ApiResponse;
+import com.app.data_table.dto.OperationRequest;
 import com.app.data_table.model.Employee;
 import com.app.data_table.service.EmployeeService;
 
@@ -94,5 +95,32 @@ public class EmployeeController {
             log.error("ERROR", e);
             throw e;
         }
+    }
+
+    @PostMapping("/save")
+    public ResponseEntity<ApiResponse<Employee>> processBatchOperations(
+            @RequestBody List<OperationRequest> operations) {
+        for (OperationRequest operation : operations) {
+            switch (operation.getOperationType().toUpperCase()) {
+                case "CREATE":
+                    for (Employee employee : operation.getEmployees()) {
+                        employeeService.addEmployee(employee);
+                    }
+                    break;
+                case "UPDATE":
+                    for (Employee employee : operation.getEmployees()) {
+                        employeeService.updateEmployee(employee, employee.getIdKaryawan());
+                    }
+                    break;
+                case "DELETE":
+                    for (Employee employee : operation.getEmployees()) {
+                        employeeService.deleteEmployee(employee.getIdKaryawan());
+                    }
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid operation type: " + operation.getOperationType());
+            }
+        }
+        return ResponseEntity.status(HttpStatus.OK.value()).body(null);
     }
 }
