@@ -2,7 +2,6 @@ package com.app.data_table.service;
 
 import java.math.BigInteger;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,13 +31,10 @@ public class EmployeeService {
 
     public ApiResponse<Employee> getEmployee(BigInteger id) {
         try {
-            Optional<Employee> emp = employeeRepository.findById(id);
+            Employee emp = employeeRepository.findById(id)
+                    .orElseThrow(() -> new EntityNotFoundException("Karyawan tidak ditemukan"));
 
-            if (!emp.isPresent()) {
-                throw new EntityNotFoundException("Karyawan tidak ditemukan");
-            }
-
-            return getResponse(emp.get(), "Berhasil mengambil data karyawan");
+            return getResponse(emp, "Berhasil mengambil data karyawan");
         } catch (Exception e) {
             log.error("Gagal mengambil data karyawan", e.getMessage());
             throw e;
@@ -57,21 +53,17 @@ public class EmployeeService {
 
     public ApiResponse<Employee> updateEmployee(Employee requestData, BigInteger id) {
         try {
-            Optional<Employee> emp = employeeRepository.findById(id);
+            Employee emp = employeeRepository.findById(id)
+                    .orElseThrow(() -> new EntityNotFoundException("Karyawan tidak ditemukan"));
 
-            if (!emp.isPresent()) {
-                throw new EntityNotFoundException("Karyawan tidak ditemukan");
-            }
+            emp.setNamaKaryawan(requestData.getNamaKaryawan());
+            emp.setJabatan(requestData.getJabatan());
+            emp.setDepartemen(requestData.getDepartemen());
+            emp.setTanggalBergabung(requestData.getTanggalBergabung());
+            emp.setStatus(requestData.getStatus());
+            employeeRepository.save(emp);
 
-            Employee updateEmp = emp.get();
-            updateEmp.setNamaKaryawan(requestData.getNamaKaryawan());
-            updateEmp.setJabatan(requestData.getJabatan());
-            updateEmp.setDepartemen(requestData.getDepartemen());
-            updateEmp.setTanggalBergabung(requestData.getTanggalBergabung());
-            updateEmp.setStatus(requestData.getStatus());
-            employeeRepository.save(updateEmp);
-
-            return getResponse(updateEmp, "Berhasil memperbarui data karyawan");
+            return getResponse(emp, "Berhasil memperbarui data karyawan");
         } catch (Exception e) {
             log.error("Gagal memperbarui data karyawan", e.getMessage());
             throw e;
@@ -80,13 +72,10 @@ public class EmployeeService {
 
     public ApiResponse<Employee> deleteEmployee(BigInteger id) {
         try {
-            Optional<Employee> emp = employeeRepository.findById(id);
+            Employee emp = employeeRepository.findById(id)
+                    .orElseThrow(() -> new EntityNotFoundException("Karyawan tidak ditemukan"));
 
-            if (!emp.isPresent()) {
-                throw new EntityNotFoundException("Karyawan tidak ditemukan");
-            }
-
-            employeeRepository.deleteById(id);
+            employeeRepository.delete(emp);
             return getResponse(null, "Berhasil menghapus data karyawan");
         } catch (Exception e) {
             log.error("Gagal menghapus data karyawan", e.getMessage());
